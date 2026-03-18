@@ -3,26 +3,26 @@
     {
       "id": "hero-sneaker",
       "description": "Futuristic black luxury sneaker with neon accents for Feeton Kicks",
-      "imageUrl": "https://picsum.photos/seed/feeton-hero/1200/800",
-      "imageHint": "futuristic sneaker luxury"
+      "imageUrl": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=1200&h=800",
+      "imageHint": "futuristic sneaker luxury red"
     },
     {
       "id": "shoe-1",
       "description": "Feeton Carbon Flux Sneaker",
-      "imageUrl": "https://picsum.photos/seed/feeton-1/600/600",
-      "imageHint": "luxury sneaker black"
+      "imageUrl": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=600&h=600",
+      "imageHint": "luxury sneaker green"
     },
     {
       "id": "shoe-2",
       "description": "Feeton Neon Pulse Sneaker",
-      "imageUrl": "https://picsum.photos/seed/feeton-2/600/600",
-      "imageHint": "futuristic footwear orange"
+      "imageUrl": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&q=80&w=600&h=600",
+      "imageHint": "futuristic footwear colorful"
     },
     {
       "id": "shoe-3",
       "description": "Feeton Crimson Edge Sneaker",
-      "imageUrl": "https://picsum.photos/seed/feeton-3/600/600",
-      "imageHint": "high-end shoe red"
+      "imageUrl": "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&q=80&w=600&h=600",
+      "imageHint": "high-end shoe white"
     }
   ]
 }

@@ -38,7 +38,7 @@ export const MicroCopyReveal = ({ productName, description }: MicroCopyRevealPro
         <Button 
           onClick={handleGenerate} 
           disabled={loading}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground glow-orange group relative overflow-hidden h-12 px-8"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground glow-red group relative overflow-hidden h-12 px-8"
         >
           {loading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -52,12 +52,12 @@ export const MicroCopyReveal = ({ productName, description }: MicroCopyRevealPro
 
       {data && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <h2 className="text-3xl font-headline font-bold mb-4 text-glow-orange">{data.tagline}</h2>
+          <h2 className="text-3xl font-headline font-bold mb-4 text-glow-red">{data.tagline}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {data.microCopyHighlights.map((highlight, idx) => (
               <Card key={idx} className="bg-white/5 border-primary/20 backdrop-blur-sm">
                 <CardContent className="p-4 flex items-center space-x-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary glow-orange shrink-0" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary glow-red shrink-0" />
                   <p className="text-sm text-foreground/80 font-body leading-relaxed">{highlight}</p>
                 </CardContent>
               </Card>

@@ -10,16 +10,16 @@ export const AuraThreeScene = () => {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // Use parent dimensions if available, otherwise default
+    const width = containerRef.current.clientWidth || 500;
+    const height = containerRef.current.clientHeight || 500;
+    console.log("AuraThreeScene: Initializing with dimensions:", width, height);
+
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      containerRef.current.clientWidth / containerRef.current.clientHeight,
-      0.1,
-      1000
-    );
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     
-    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
@@ -33,28 +33,36 @@ export const AuraThreeScene = () => {
     mainLight.position.set(5, 5, 5);
     scene.add(mainLight);
 
-    const accentLight = new THREE.PointLight(0xff9900, 10, 10);
+    const accentLight = new THREE.PointLight(0xffffff, 10, 10);
     accentLight.position.set(-2, 2, 2);
     scene.add(accentLight);
 
-    const rimLight = new THREE.PointLight(0xcc1717, 8, 10);
+    const rimLight = new THREE.PointLight(0xff0000, 8, 10);
     rimLight.position.set(2, -2, -2);
     scene.add(rimLight);
 
     camera.position.set(0, 0, 4);
 
-    let shoe: THREE.Group | null = null;
+    let shoe: THREE.Object3D | null = null;
+    let fallbackCube: THREE.Mesh | null = null;
+
+    // Add a temporary invisible cube to ensure something is in the scene
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshPhongMaterial({ color: 0xff0000, wireframe: true, transparent: true, opacity: 0 });
+    fallbackCube = new THREE.Mesh(geometry, material);
+    scene.add(fallbackCube);
 
     // Load Shoe Model
     const loader = new GLTFLoader();
-    // Using a reliable public URL for a high-quality shoe model
     const shoeUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb";
 
+    console.log("AuraThreeScene: Loading shoe from:", shoeUrl);
     loader.load(
       shoeUrl,
       (gltf) => {
+        console.log("AuraThreeScene: Shoe loaded successfully");
         shoe = gltf.scene;
-        shoe.scale.set(10, 10, 10); // Scale up for visibility
+        shoe.scale.set(10, 10, 10);
         shoe.rotation.y = Math.PI / 4;
         
         // Center the shoe
@@ -63,10 +71,25 @@ export const AuraThreeScene = () => {
         shoe.position.sub(center);
         
         scene.add(shoe);
+        
+        // Remove fallback if shoe is loaded
+        if (fallbackCube) {
+          scene.remove(fallbackCube);
+        }
       },
-      undefined,
+      (xhr) => {
+        if (xhr.total > 0) {
+          console.log(`AuraThreeScene: ${(xhr.loaded / xhr.total * 100).toFixed(2)}% loaded`);
+        } else {
+          console.log(`AuraThreeScene: ${xhr.loaded} bytes loaded`);
+        }
+      },
       (error) => {
-        console.error("Error loading 3D shoe:", error);
+        console.error("AuraThreeScene: Error loading 3D shoe:", error);
+        // Make fallback visible if loading fails
+        if (fallbackCube) {
+          fallbackCube.material.opacity = 0.5;
+        }
       }
     );
 
@@ -81,24 +104,23 @@ export const AuraThreeScene = () => {
     window.addEventListener("mousemove", handleMouseMove);
 
     const animate = () => {
-      requestAnimationFrame(animate);
+      const animationId = requestAnimationFrame(animate);
 
       if (shoe) {
-        // Continuous rotation
         shoe.rotation.y += 0.005;
-        
-        // Interaction
         shoe.rotation.y += mouseX * 0.01;
         shoe.rotation.x += mouseY * 0.01;
-
-        // Floating effect
         shoe.position.y = Math.sin(Date.now() * 0.002) * 0.05;
+      } else if (fallbackCube) {
+        fallbackCube.rotation.y += 0.01;
+        fallbackCube.rotation.x += 0.01;
       }
 
       renderer.render(scene, camera);
+      return animationId;
     };
 
-    animate();
+    const animationId = animate();
 
     const handleResize = () => {
       if (!containerRef.current) return;
@@ -115,9 +137,16 @@ export const AuraThreeScene = () => {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
-      containerRef.current?.removeChild(renderer.domElement);
+      cancelAnimationFrame(animationId);
+      if (containerRef.current && renderer.domElement) {
+        containerRef.current.removeChild(renderer.domElement);
+      }
+      // Dispose resources
+      renderer.dispose();
+      geometry.dispose();
+      material.dispose();
     };
   }, []);
 
-  return <div ref={containerRef} className="w-full h-full min-h-[500px]" />;
+  return <div ref={containerRef} className="w-full h-full min-h-[500px] flex items-center justify-center" />;
 };

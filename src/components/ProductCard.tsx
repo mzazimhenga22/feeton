@@ -93,7 +93,7 @@ export const ProductCard = ({ name, price, image, tag, description }: ProductCar
             <MicroCopyReveal productName={name} description={description} />
 
             <div className="flex gap-4">
-              <Button className="flex-1 h-14 bg-primary text-primary-foreground font-bold rounded-xl glow-orange">
+              <Button className="flex-1 h-14 bg-primary text-primary-foreground font-bold rounded-xl glow-red">
                 ADD TO COLLECTION
               </Button>
               <Button variant="outline" className="h-14 w-14 rounded-xl border-white/20">
