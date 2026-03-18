@@ -11,8 +11,8 @@ export const Navigation = () => {
     <header className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="text-2xl font-bold font-headline tracking-tighter flex items-center gap-1 group">
-          <span className="text-primary group-hover:text-glow-orange transition-all duration-300">AURA</span>
-          <span className="text-foreground/80">FLOW</span>
+          <span className="text-primary group-hover:text-glow-orange transition-all duration-300">FEETON</span>
+          <span className="text-foreground/80">KICKS</span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-8">
@@ -33,7 +33,7 @@ export const Navigation = () => {
             <Menu className="w-6 h-6" />
           </Button>
           <Button variant="outline" className="hidden md:flex border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground rounded-full px-6 transition-all duration-300 glow-orange">
-            JOIN AURA
+            JOIN FEETON
           </Button>
         </div>
       </div>

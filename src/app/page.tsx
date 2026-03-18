@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Navigation } from "@/components/Navigation";
 import { AuraThreeScene } from "@/components/AuraThreeScene";
@@ -7,7 +8,6 @@ import { ArrowRight, Zap, Shield, Globe, Sparkles } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function Home() {
-  const heroImage = PlaceHolderImages.find(img => img.id === "hero-sneaker");
   const collectionImages = [
     PlaceHolderImages.find(img => img.id === "shoe-1"),
     PlaceHolderImages.find(img => img.id === "shoe-2"),
@@ -31,7 +31,7 @@ export default function Home() {
                 Innovation in motion
               </Badge>
               <h1 className="text-7xl lg:text-9xl font-headline font-bold leading-tight tracking-tighter">
-                FUTURE <br />
+                KICKS <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-[gradient_8s_linear_infinite]">
                   BEYOND
                 </span>
@@ -39,7 +39,7 @@ export default function Home() {
             </div>
             
             <p className="text-xl text-foreground/60 max-w-lg font-body leading-relaxed">
-              Step into the neon-lit horizon with Aura. Designed for the elite, engineered for the futuristic, and crafted for ultimate distinction.
+              Step into the neon-lit horizon with Feeton. Designed for the elite, engineered for the futuristic, and crafted for ultimate distinction.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -74,7 +74,7 @@ export default function Home() {
         <div className="container mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
           {[
             { icon: Zap, label: "Energy Return", value: "98.4%" },
-            { icon: Shield, label: "Durability Rank", value: "Aura Grade" },
+            { icon: Shield, label: "Durability Rank", value: "Feeton Grade" },
             { icon: Globe, label: "Sustainable", value: "Eco-Futurist" },
             { icon: Sparkles, label: "Limited Drops", value: "Exclusive" }
           ].map((stat, i) => (
@@ -96,14 +96,14 @@ export default function Home() {
               <div className="w-24 h-1 bg-primary" />
             </div>
             <p className="text-foreground/40 max-w-sm font-body uppercase tracking-wider text-sm">
-              Discover the pinnacle of technical craftsmanship. Each pair is a testament to the Aura philosophy of performance luxury.
+              Discover the pinnacle of technical craftsmanship. Each pair is a testament to the Feeton philosophy of performance luxury.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <ProductCard 
               id="c-1" 
-              name="AURA CARBON FLUX" 
+              name="FEETON CARBON FLUX" 
               price="$540.00" 
               image={collectionImages[0]?.imageUrl || ""} 
               tag="Performance"
@@ -133,8 +133,8 @@ export default function Home() {
       <footer className="py-20 border-t border-white/5 bg-black/40">
         <div className="container mx-auto px-6 text-center space-y-12">
           <Link href="/" className="text-4xl font-bold font-headline tracking-tighter inline-flex items-center gap-2">
-            <span className="text-primary">AURA</span>
-            <span className="text-foreground/80">FLOW</span>
+            <span className="text-primary">FEETON</span>
+            <span className="text-foreground/80">KICKS</span>
           </Link>
           <div className="flex justify-center space-x-12">
             <Link href="#" className="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest">Privacy</Link>
@@ -142,7 +142,7 @@ export default function Home() {
             <Link href="#" className="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest">Contact</Link>
           </div>
           <p className="text-foreground/20 text-xs uppercase tracking-[0.5em]">
-            © 2025 AURA FLOW INC. ENGINEERED FOR THE FUTURE.
+            © 2025 FEETON KICKS INC. ENGINEERED FOR THE FUTURE.
           </p>
         </div>
       </footer>
