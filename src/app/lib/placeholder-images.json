@@ -1,0 +1,29 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "hero-sneaker",
+      "description": "Futuristic black luxury sneaker with neon accents",
+      "imageUrl": "https://picsum.photos/seed/aura-hero/1200/800",
+      "imageHint": "futuristic sneaker luxury"
+    },
+    {
+      "id": "shoe-1",
+      "description": "Aura Carbon Flux Sneaker",
+      "imageUrl": "https://picsum.photos/seed/aura-1/600/600",
+      "imageHint": "luxury sneaker black"
+    },
+    {
+      "id": "shoe-2",
+      "description": "Aura Neon Pulse Sneaker",
+      "imageUrl": "https://picsum.photos/seed/aura-2/600/600",
+      "imageHint": "futuristic footwear orange"
+    },
+    {
+      "id": "shoe-3",
+      "description": "Aura Crimson Edge Sneaker",
+      "imageUrl": "https://picsum.photos/seed/aura-3/600/600",
+      "imageHint": "high-end shoe red"
+    }
+  ]
+}
