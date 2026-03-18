@@ -24,13 +24,19 @@ export const ProductCard = ({ name, price, image, tag, description }: ProductCar
       <DialogTrigger asChild>
         <div className="group relative bg-card rounded-2xl border border-white/5 overflow-hidden transition-all duration-500 hover:border-primary/50 cursor-pointer">
           <div className="aspect-square relative overflow-hidden">
-            <Image 
-              src={image} 
-              alt={name} 
-              fill 
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
-              data-ai-hint="luxury sneaker"
-            />
+            {image ? (
+              <Image 
+                src={image} 
+                alt={name} 
+                fill 
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                data-ai-hint="luxury sneaker"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted flex items-center justify-center">
+                <span className="text-xs text-muted-foreground uppercase tracking-widest">Image Unavailable</span>
+              </div>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60" />
             <div className="absolute top-4 left-4">
               <Badge className="bg-primary/20 text-primary border-primary/50 backdrop-blur-md uppercase tracking-tighter">
@@ -62,7 +68,13 @@ export const ProductCard = ({ name, price, image, tag, description }: ProductCar
       <DialogContent className="max-w-4xl bg-background border-primary/20 glass p-0 overflow-hidden">
         <div className="grid md:grid-cols-2">
           <div className="relative aspect-square md:aspect-auto">
-            <Image src={image} alt={name} fill className="object-cover" />
+            {image ? (
+              <Image src={image} alt={name} fill className="object-cover" />
+            ) : (
+              <div className="w-full h-full bg-muted flex items-center justify-center">
+                <span className="text-xs text-muted-foreground uppercase tracking-widest">Image Unavailable</span>
+              </div>
+            )}
           </div>
           <div className="p-8 space-y-8 flex flex-col justify-center">
             <DialogHeader>
