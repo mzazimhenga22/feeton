@@ -148,7 +148,7 @@ export default function Home() {
 
           <div className="flex justify-center gap-10">
             {[
-              { icon: TikTokIcon, href: "https://www.tiktok.com/@feetoncollections" },
+              { icon: TikTokIcon, href: "https://www.tiktok.com/@feeton_collections" },
               { icon: ArrowRight, href: "#" },
               { icon: ArrowRight, href: "#" }
             ].map((social, i) => (
@@ -171,7 +171,7 @@ export default function Home() {
 
           <div className="pt-24 border-t border-white/5">
             <p className="text-foreground/10 text-xs uppercase tracking-[0.8em] font-bold">
-              © 2026 FEETON KICKS INC. @FEETONCOLLECTIONS
+              © 2026 FEETON KICKS INC. @feeton_collections
             </p>
           </div>
         </div>

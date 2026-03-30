@@ -1,25 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProductCard } from "./ProductCard";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { getProducts, Product } from "@/lib/products";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CATEGORIES = ["ALL", "PERFORMANCE", "LIMITED", "LIFESTYLE"];
 
-const PRODUCTS = [
-  { id: "c-1", name: "FEETON CARBON FLUX", price: "$540.00", category: "PERFORMANCE", tag: "Performance", description: "A masterpiece of carbon fiber integration.", image: PlaceHolderImages.find(img => img.id === "shoe-1")?.imageUrl || "" },
-  { id: "c-2", name: "NEON PULSE XT", price: "$620.00", category: "LIMITED", tag: "Limited", description: "Featuring active illuminating soles.", image: PlaceHolderImages.find(img => img.id === "shoe-2")?.imageUrl || "" },
-  { id: "c-3", name: "CRIMSON EDGE 01", price: "$480.00", category: "LIFESTYLE", tag: "Lifestyle", description: "Sharp edges meet soft landings.", image: PlaceHolderImages.find(img => img.id === "shoe-3")?.imageUrl || "" },
-];
-
 export const CollectionSection = () => {
   const [activeTab, setActiveTab] = useState("ALL");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      const data = await getProducts();
+      setProducts(data);
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
 
   const filteredProducts = activeTab === "ALL" 
-    ? PRODUCTS 
-    : PRODUCTS.filter(p => p.category === activeTab);
+    ? products 
+    : products.filter(p => p.category === activeTab);
 
   return (
     <section id="collections" className="py-60 relative bg-[#050505]">
@@ -55,20 +62,32 @@ export const CollectionSection = () => {
         </div>
 
         <motion.div layout className="grid md:grid-cols-3 gap-16">
-          <AnimatePresence mode="popLayout">
-            {filteredProducts.map((product) => (
-              <motion.div
-                key={product.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5 }}
-              >
-                <ProductCard {...product} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          {loading ? (
+            Array(3).fill(0).map((_, i) => (
+              <div key={i} className="space-y-6">
+                <Skeleton className="aspect-square w-full rounded-2xl bg-white/5" />
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-2/3 bg-white/5" />
+                  <Skeleton className="h-4 w-1/3 bg-white/5" />
+                </div>
+              </div>
+            ))
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.map((product, idx) => (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                >
+                  <ProductCard {...product} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
         </motion.div>
       </div>
     </section>

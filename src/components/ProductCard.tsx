@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -8,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { MicroCopyReveal } from "./MicroCopyReveal";
+import { useCart } from "./CartProvider";
+import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "./ThemeProvider";
 
 interface ProductCardProps {
   id: string;
@@ -16,13 +18,42 @@ interface ProductCardProps {
   image: string;
   tag: string;
   description: string;
+  category?: string;
 }
 
-export const ProductCard = ({ name, price, image, tag, description }: ProductCardProps) => {
+export const ProductCard = ({ id, name, price, image, tag, description, category = "UNSPECIFIED" }: ProductCardProps) => {
+  const { addItem } = useCart();
+  const { toast } = useToast();
+  const { setTheme } = useTheme();
+
+  const handleAddToCart = () => {
+    addItem({ id, name, price, image, tag, description, category });
+    toast({
+      title: "Added to Collection",
+      description: `${name} has been added to your cart.`,
+    });
+  };
+
+  const handleMouseEnter = () => {
+    const lowerCat = category.toLowerCase();
+    if (lowerCat.includes("performance")) setTheme("performance");
+    else if (lowerCat.includes("limited")) setTheme("limited");
+    else if (lowerCat.includes("lifestyle")) setTheme("lifestyle");
+    else setTheme("default");
+  };
+
+  const handleMouseLeave = () => {
+    setTheme("default");
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="group relative bg-card rounded-2xl border border-white/5 overflow-hidden transition-all duration-500 hover:border-primary/50 cursor-pointer">
+        <div 
+          className="group relative bg-card rounded-2xl border border-white/5 overflow-hidden transition-all duration-500 hover:border-primary/50 cursor-pointer"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <div className="aspect-square relative overflow-hidden">
             {image ? (
               <Image 
@@ -39,7 +70,7 @@ export const ProductCard = ({ name, price, image, tag, description }: ProductCar
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60" />
             <div className="absolute top-4 left-4">
-              <Badge className="bg-primary/20 text-primary border-primary/50 backdrop-blur-md uppercase tracking-tighter">
+              <Badge className="bg-primary/20 text-primary border-primary/50 backdrop-blur-md uppercase tracking-tighter transition-colors duration-500">
                 {tag}
               </Badge>
             </div>
@@ -48,7 +79,14 @@ export const ProductCard = ({ name, price, image, tag, description }: ProductCar
                 <Button size="icon" className="rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-primary hover:text-primary-foreground">
                   <Eye className="w-5 h-5" />
                 </Button>
-                <Button size="icon" className="rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-primary hover:text-primary-foreground">
+                <Button 
+                  size="icon" 
+                  className="rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-primary hover:text-primary-foreground"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart();
+                  }}
+                >
                   <Plus className="w-5 h-5" />
                 </Button>
               </div>
@@ -56,7 +94,7 @@ export const ProductCard = ({ name, price, image, tag, description }: ProductCar
           </div>
           
           <div className="p-6 space-y-2">
-            <h3 className="font-headline text-lg font-bold group-hover:text-primary transition-colors">{name}</h3>
+            <h3 className="font-headline text-lg font-bold group-hover:text-primary transition-colors duration-500">{name}</h3>
             <div className="flex items-center justify-between">
               <p className="text-foreground/60 font-body text-sm uppercase tracking-widest">{price}</p>
               <div className="w-8 h-px bg-white/20" />
@@ -79,8 +117,8 @@ export const ProductCard = ({ name, price, image, tag, description }: ProductCar
           <div className="p-8 space-y-8 flex flex-col justify-center">
             <DialogHeader>
               <Badge className="w-fit mb-2 bg-secondary/20 text-secondary border-secondary/50">{tag}</Badge>
-              <DialogTitle className="text-5xl font-headline font-bold mb-2">{name}</DialogTitle>
-              <p className="text-2xl font-body text-primary font-bold">{price}</p>
+              <DialogTitle className="text-5xl font-headline font-bold mb-2 text-primary transition-colors duration-500">{name}</DialogTitle>
+              <p className="text-2xl font-body text-primary font-bold transition-colors duration-500">{price}</p>
             </DialogHeader>
 
             <div className="space-y-4">
@@ -93,10 +131,17 @@ export const ProductCard = ({ name, price, image, tag, description }: ProductCar
             <MicroCopyReveal productName={name} description={description} />
 
             <div className="flex gap-4">
-              <Button className="flex-1 h-14 bg-primary text-primary-foreground font-bold rounded-xl glow-red">
+              <Button 
+                className="flex-1 h-14 bg-primary text-primary-foreground font-bold rounded-xl glow-red transition-all duration-500"
+                onClick={handleAddToCart}
+              >
                 ADD TO COLLECTION
               </Button>
-              <Button variant="outline" className="h-14 w-14 rounded-xl border-white/20">
+              <Button 
+                variant="outline" 
+                className="h-14 w-14 rounded-xl border-white/20 hover:bg-primary hover:text-primary-foreground transition-all duration-500"
+                onClick={handleAddToCart}
+              >
                 <Plus />
               </Button>
             </div>

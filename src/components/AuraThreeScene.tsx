@@ -1,152 +1,89 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { 
+  OrbitControls, 
+  Environment, 
+  ContactShadows, 
+  Float, 
+  useGLTF, 
+  Html, 
+  useProgress 
+} from "@react-three/drei";
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+
+function Loader() {
+  const { progress } = useProgress();
+  return (
+    <Html center>
+      <div className="text-white font-headline font-bold uppercase tracking-widest text-sm flex flex-col items-center gap-2">
+        <div className="w-16 h-[2px] bg-white/20 overflow-hidden rounded-full">
+          <div 
+            className="h-full bg-primary transition-all duration-300" 
+            style={{ width: `${progress}%` }} 
+          />
+        </div>
+        {progress.toFixed(0)}%
+      </div>
+    </Html>
+  );
+}
+
+function ShoeModel() {
+  const { scene } = useGLTF("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb");
+  
+  // Center and scale
+  const box = new THREE.Box3().setFromObject(scene);
+  const center = box.getCenter(new THREE.Vector3());
+  scene.position.x = -center.x;
+  scene.position.y = -center.y;
+  scene.position.z = -center.z;
+
+  return (
+    <Float 
+      speed={2} 
+      rotationIntensity={0.5} 
+      floatIntensity={0.5} 
+      floatingRange={[-0.1, 0.1]}
+    >
+      <primitive object={scene} scale={10} rotation={[0, Math.PI / 4, 0]} />
+    </Float>
+  );
+}
 
 export const AuraThreeScene = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    // Use parent dimensions if available, otherwise default
-    const width = containerRef.current.clientWidth || 500;
-    const height = containerRef.current.clientHeight || 500;
-    console.log("AuraThreeScene: Initializing with dimensions:", width, height);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    containerRef.current.appendChild(renderer.domElement);
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-
-    const mainLight = new THREE.DirectionalLight(0xffffff, 2);
-    mainLight.position.set(5, 5, 5);
-    scene.add(mainLight);
-
-    const accentLight = new THREE.PointLight(0xffffff, 10, 10);
-    accentLight.position.set(-2, 2, 2);
-    scene.add(accentLight);
-
-    const rimLight = new THREE.PointLight(0xff0000, 8, 10);
-    rimLight.position.set(2, -2, -2);
-    scene.add(rimLight);
-
-    camera.position.set(0, 0, 4);
-
-    let shoe: THREE.Object3D | null = null;
-    let fallbackCube: THREE.Mesh | null = null;
-
-    // Add a temporary invisible cube to ensure something is in the scene
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshPhongMaterial({ color: 0xff0000, wireframe: true, transparent: true, opacity: 0 });
-    fallbackCube = new THREE.Mesh(geometry, material);
-    scene.add(fallbackCube);
-
-    // Load Shoe Model
-    const loader = new GLTFLoader();
-    const shoeUrl = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb";
-
-    console.log("AuraThreeScene: Loading shoe from:", shoeUrl);
-    loader.load(
-      shoeUrl,
-      (gltf) => {
-        console.log("AuraThreeScene: Shoe loaded successfully");
-        shoe = gltf.scene;
-        shoe.scale.set(10, 10, 10);
-        shoe.rotation.y = Math.PI / 4;
+  return (
+    <div className="w-full h-full min-h-[500px] relative cursor-grab active:cursor-grabbing">
+      <Canvas camera={{ position: [0, 0, 4], fov: 45 }} gl={{ antialias: true, alpha: true }}>
+        <ambientLight intensity={0.5} />
+        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
         
-        // Center the shoe
-        const box = new THREE.Box3().setFromObject(shoe);
-        const center = box.getCenter(new THREE.Vector3());
-        shoe.position.sub(center);
-        
-        scene.add(shoe);
-        
-        // Remove fallback if shoe is loaded
-        if (fallbackCube) {
-          scene.remove(fallbackCube);
-        }
-      },
-      (xhr) => {
-        if (xhr.total > 0) {
-          console.log(`AuraThreeScene: ${(xhr.loaded / xhr.total * 100).toFixed(2)}% loaded`);
-        } else {
-          console.log(`AuraThreeScene: ${xhr.loaded} bytes loaded`);
-        }
-      },
-      (error) => {
-        console.error("AuraThreeScene: Error loading 3D shoe:", error);
-        // Make fallback visible if loading fails
-        if (fallbackCube) {
-          fallbackCube.material.opacity = 0.5;
-        }
-      }
-    );
+        {/* Red Rim Light */}
+        <pointLight position={[2, -2, -2]} color="#ff0000" intensity={10} distance={10} />
+        {/* Blue/White Fill Light */}
+        <pointLight position={[-2, 2, 2]} color="#ffffff" intensity={5} distance={10} />
 
-    let mouseX = 0;
-    let mouseY = 0;
+        <Suspense fallback={<Loader />}>
+          <ShoeModel />
+          <Environment preset="city" />
+          <ContactShadows position={[0, -1.5, 0]} opacity={0.5} scale={10} blur={2} far={4} />
+        </Suspense>
 
-    const handleMouseMove = (event: MouseEvent) => {
-      mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    const animate = () => {
-      const animationId = requestAnimationFrame(animate);
-
-      if (shoe) {
-        shoe.rotation.y += 0.005;
-        shoe.rotation.y += mouseX * 0.01;
-        shoe.rotation.x += mouseY * 0.01;
-        shoe.position.y = Math.sin(Date.now() * 0.002) * 0.05;
-      } else if (fallbackCube) {
-        fallbackCube.rotation.y += 0.01;
-        fallbackCube.rotation.x += 0.01;
-      }
-
-      renderer.render(scene, camera);
-      return animationId;
-    };
-
-    const animationId = animate();
-
-    const handleResize = () => {
-      if (!containerRef.current) return;
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
-      
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("resize", handleResize);
-      cancelAnimationFrame(animationId);
-      if (containerRef.current && renderer.domElement) {
-        containerRef.current.removeChild(renderer.domElement);
-      }
-      // Dispose resources
-      renderer.dispose();
-      geometry.dispose();
-      material.dispose();
-    };
-  }, []);
-
-  return <div ref={containerRef} className="w-full h-full min-h-[500px] flex items-center justify-center" />;
+        <OrbitControls 
+          enablePan={false}
+          enableZoom={false}
+          minPolarAngle={Math.PI / 3}
+          maxPolarAngle={Math.PI / 1.5}
+          autoRotate
+          autoRotateSpeed={0.5}
+        />
+      </Canvas>
+    </div>
+  );
 };
+
+// Preload the model
+if (typeof window !== 'undefined') {
+  useGLTF.preload("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb");
+}
