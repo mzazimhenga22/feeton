@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -63,19 +62,25 @@ export const TechSection = () => {
           {technologies.map((tech, i) => (
             <motion.div 
               key={i} 
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15, duration: 0.6 }}
-              className="group p-10 rounded-[2.5rem] bg-white/5 border border-white/5 hover:border-primary/50 transition-all duration-500 hover:-translate-y-4"
+              initial={{ opacity: 0, y: 40, rotateX: 20 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: i * 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="group p-10 rounded-[2.5rem] bg-white/5 border border-white/5 hover:border-primary/50 transition-all duration-500 hover:-translate-y-4 perspective-1000"
             >
-              <div className={`w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ${tech.color}`}>
+              <motion.div 
+                whileHover={{ rotateY: 180 }}
+                transition={{ duration: 0.6 }}
+                className={`w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mb-8 group-hover:glow-red transition-all duration-500 ${tech.color}`}
+              >
                 <tech.icon className="w-10 h-10" />
-              </div>
-              <h4 className="text-2xl font-headline font-bold mb-4 tracking-tight">{tech.title}</h4>
-              <p className="text-foreground/40 font-body text-sm leading-relaxed uppercase tracking-[0.15em]">
+              </motion.div>
+              <h4 className="text-2xl font-headline font-bold mb-4 tracking-tight group-hover:text-primary transition-colors">{tech.title}</h4>
+              <p className="text-foreground/40 font-body text-sm leading-relaxed uppercase tracking-[0.15em] group-hover:text-foreground/60 transition-colors">
                 {tech.description}
               </p>
+              
+              <div className="mt-8 h-px w-0 group-hover:w-full bg-primary/30 transition-all duration-500" />
             </motion.div>
           ))}
         </div>
