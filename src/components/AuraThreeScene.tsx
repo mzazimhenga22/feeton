@@ -49,7 +49,9 @@ function ShoeModel({ isLabMode }: { isLabMode: boolean }) {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         if (mesh.material instanceof THREE.MeshStandardMaterial) {
-          mesh.material.envMapIntensity = 1.5;
+          mesh.material.envMapIntensity = 2.5;
+          mesh.material.roughness = 0.1;
+          mesh.material.metalness = 0.8;
         }
       }
     });
@@ -61,7 +63,7 @@ function ShoeModel({ isLabMode }: { isLabMode: boolean }) {
         const mesh = child as THREE.Mesh;
         if (mesh.material instanceof THREE.MeshStandardMaterial) {
           mesh.material.wireframe = isLabMode;
-          mesh.material.emissiveIntensity = isLabMode ? 0.5 : 0;
+          mesh.material.emissiveIntensity = isLabMode ? 1 : 0;
           if (isLabMode) mesh.material.emissive = new THREE.Color("#ff0000");
         }
       }
@@ -70,8 +72,8 @@ function ShoeModel({ isLabMode }: { isLabMode: boolean }) {
 
   useFrame((state) => {
     if (!group.current) return;
-    const targetRotationY = state.mouse.x * 0.3;
-    const targetRotationX = state.mouse.y * 0.1;
+    const targetRotationY = state.mouse.x * 0.4;
+    const targetRotationX = state.mouse.y * 0.2;
     
     group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, targetRotationY + (Math.PI / 4), 0.05);
     group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, targetRotationX, 0.05);
@@ -79,7 +81,7 @@ function ShoeModel({ isLabMode }: { isLabMode: boolean }) {
 
   return (
     <group ref={group}>
-      <primitive object={scene} scale={10} />
+      <primitive object={scene} scale={11} />
     </group>
   );
 }
@@ -88,12 +90,12 @@ export const AuraThreeScene = () => {
   const [isLabMode, setIsLabMode] = useState(false);
 
   return (
-    <div className="w-full h-full min-h-[500px] relative">
-      <div className="absolute inset-0 pointer-events-none z-20 flex flex-col justify-between p-8 opacity-40">
+    <div className="w-full h-full min-h-[500px] relative bg-transparent">
+      <div className="absolute inset-0 pointer-events-none z-20 flex flex-col justify-between p-8 opacity-60">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <div className="w-8 h-[1px] bg-primary" />
-            <div className="text-[8px] font-mono tracking-widest uppercase">OS V2.6</div>
+            <div className="text-[8px] font-mono tracking-widest uppercase text-primary">SCAN_CORE V3.0</div>
           </div>
         </div>
         
@@ -103,10 +105,10 @@ export const AuraThreeScene = () => {
                 onClick={() => setIsLabMode(!isLabMode)}
                 variant="outline" 
                 size="sm" 
-                className={`rounded-full border-primary/30 text-[10px] tracking-widest uppercase h-10 px-6 backdrop-blur-xl transition-all duration-300 ${isLabMode ? 'bg-primary text-white' : 'bg-black/40 hover:bg-black/60'}`}
+                className={`rounded-full border-primary/30 text-[10px] tracking-widest uppercase h-10 px-6 backdrop-blur-xl transition-all duration-500 shadow-2xl ${isLabMode ? 'bg-primary text-white border-white/50' : 'bg-black/40 hover:bg-black/60 hover:border-primary'}`}
              >
-                {isLabMode ? <Scan className="w-3 h-3 mr-2" /> : <FlaskConical className="w-3 h-3 mr-2" />}
-                {isLabMode ? "SCAN ACTIVE" : "LAB MODE"}
+                {isLabMode ? <Scan className="w-3 h-3 mr-2 animate-pulse" /> : <FlaskConical className="w-3 h-3 mr-2" />}
+                {isLabMode ? "SCANNING BIOMETRICS" : "LAB OVERRIDE"}
              </Button>
           </div>
         </div>
@@ -114,18 +116,19 @@ export const AuraThreeScene = () => {
 
       <Canvas 
         shadows 
-        dpr={[1, 1.5]} // Capped for performance
-        camera={{ position: [0, 0, 5], fov: 35 }}
-        gl={{ antialias: false, alpha: true, stencil: false, depth: true }} // Disabled antialias for speed
+        dpr={[1, 2]} 
+        camera={{ position: [0, 0, 5], fov: 30 }}
+        gl={{ antialias: true, alpha: true, stencil: false, depth: true, powerPreference: "high-performance" }}
       >
         <Suspense fallback={<Loader />}>
-          <Environment preset="city" />
-          <Float speed={1} rotationIntensity={0.1} floatIntensity={0.2}>
+          <Environment preset="studio" />
+          <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.4}>
             <ShoeModel isLabMode={isLabMode} />
           </Float>
-          <spotLight position={[5, 10, 5]} angle={0.3} intensity={1} />
-          <pointLight position={[2, -2, -2]} color="#ff0000" intensity={5} />
-          <ContactShadows position={[0, -1.2, 0]} opacity={0.4} scale={10} blur={2.5} far={4} />
+          {/* Studio lighting that bleeds out into the page UI */}
+          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow />
+          <pointLight position={[-10, -10, -10]} color="#ff0000" intensity={10} />
+          <ContactShadows position={[0, -1.5, 0]} opacity={0.6} scale={15} blur={3} far={10} />
         </Suspense>
         <OrbitControls enablePan={false} enableZoom={false} />
       </Canvas>

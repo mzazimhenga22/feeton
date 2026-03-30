@@ -15,6 +15,7 @@ import { StyleAssistant } from "@/components/StyleAssistant";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import Link from "next/link";
 
 const AnimatedTitle = ({ text }: { text: string }) => {
   return (
@@ -78,11 +79,17 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        {/* Unified Atmospheric Glow */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1400px] aspect-square bg-primary/5 rounded-full blur-[180px] animate-pulse-glow" />
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-1/2 h-full bg-gradient-to-l from-primary/10 to-transparent blur-3xl opacity-30" />
+        </div>
+
         <div className="container mx-auto px-6 relative z-10">
-          <div className="grid lg:grid-cols-2 items-center gap-16">
+          <div className="grid lg:grid-cols-2 items-center gap-0 lg:-space-x-20">
             <motion.div 
               style={{ opacity: textOpacity, y: textY }}
-              className="space-y-12"
+              className="space-y-12 relative z-20"
             >
               <div className="space-y-6">
                 <motion.div
@@ -90,7 +97,7 @@ export default function Home() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 1 }}
                 >
-                  <Badge variant="outline" className="border-primary/50 text-primary px-6 py-2 uppercase tracking-[0.4em] font-bold text-[10px] bg-primary/5">
+                  <Badge variant="outline" className="border-primary/50 text-primary px-6 py-2 uppercase tracking-[0.4em] font-bold text-[10px] bg-primary/5 backdrop-blur-sm">
                     Chapter 01: The Genesis
                   </Badge>
                 </motion.div>
@@ -131,13 +138,14 @@ export default function Home() {
 
             <motion.div 
               style={{ scale }}
-              className="relative h-[600px] lg:h-[800px] flex items-center justify-center"
+              className="relative h-[600px] lg:h-[800px] flex items-center justify-center z-10"
             >
                <div className="w-full h-full relative">
                  <AuraThreeScene />
                </div>
+               {/* Enhanced Focal Glow for the shoe */}
                <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
-                  <div className="w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] animate-pulse-glow" />
+                  <div className="w-[80%] h-[80%] bg-primary/20 rounded-full blur-[140px] animate-pulse-glow" />
                </div>
             </motion.div>
           </div>
@@ -145,7 +153,7 @@ export default function Home() {
         
         <motion.div 
           style={{ opacity: textOpacity }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 z-20"
         >
           <span className="text-[10px] uppercase tracking-[0.5em] font-bold opacity-30">Scroll to Evolve</span>
           <motion.div 
@@ -218,5 +226,3 @@ export default function Home() {
     </div>
   );
 }
-
-import Link from "next/link";
