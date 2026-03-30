@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, useRef, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { 
   OrbitControls, 
   Environment, 
@@ -10,10 +10,10 @@ import {
   useGLTF, 
   Html, 
   useProgress,
-  PerspectiveCamera,
-  Stage
 } from "@react-three/drei";
 import * as THREE from "three";
+import { Button } from "@/components/ui/button";
+import { FlaskConical, Scan } from "lucide-react";
 
 /**
  * High-tech loading interface that matches the Feeton Kicks aesthetic.
@@ -43,7 +43,7 @@ function Loader() {
 /**
  * The core Shoe model with interactive parallax and optimized materials.
  */
-function ShoeModel() {
+function ShoeModel({ isLabMode }: { isLabMode: boolean }) {
   const { scene } = useGLTF("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb");
   const group = useRef<THREE.Group>(null);
   
@@ -66,6 +66,25 @@ function ShoeModel() {
       }
     });
   }, [scene]);
+
+  // Handle Lab Mode Visuals
+  React.useEffect(() => {
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        if (mesh.material instanceof THREE.MeshStandardMaterial) {
+          mesh.material.wireframe = isLabMode;
+          if (isLabMode) {
+            mesh.material.emissive = new THREE.Color("#ff0000");
+            mesh.material.emissiveIntensity = 0.5;
+          } else {
+            mesh.material.emissive = new THREE.Color("#000000");
+            mesh.material.emissiveIntensity = 0;
+          }
+        }
+      }
+    });
+  }, [isLabMode, scene]);
 
   // Mouse tracking parallax
   useFrame((state) => {
@@ -96,23 +115,18 @@ function ShoeModel() {
 function Lights() {
   return (
     <>
-      {/* Main Key Light */}
       <spotLight position={[5, 10, 5]} angle={0.3} penumbra={1} intensity={2} castShadow />
-      
-      {/* Brand Rim Lights (Red) */}
       <pointLight position={[2, -2, -2]} color="#ff0000" intensity={15} distance={15} />
       <pointLight position={[-3, 0, -3]} color="#ff0000" intensity={10} distance={10} />
-      
-      {/* Cold Fill Light */}
       <pointLight position={[-5, 5, 5]} color="#00ffff" intensity={2} distance={20} />
-      
-      {/* Under-glow for the "pedestal" feel */}
       <pointLight position={[0, -2, 0]} color="#ffffff" intensity={5} distance={5} />
     </>
   );
 }
 
 export const AuraThreeScene = () => {
+  const [isLabMode, setIsLabMode] = useState(false);
+
   return (
     <div className="w-full h-full min-h-[500px] relative">
       {/* Technical HUD Overlay */}
@@ -120,14 +134,28 @@ export const AuraThreeScene = () => {
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <div className="w-8 h-[1px] bg-primary" />
-            <div className="text-[8px] font-mono tracking-widest">FEETON-OS V2.6</div>
+            <div className="text-[8px] font-mono tracking-widest uppercase">Feeton-OS V2.6</div>
           </div>
           <div className="text-right">
-            <div className="text-[8px] font-mono tracking-widest text-primary">KINETIC ANALYSIS: ACTIVE</div>
+            <div className="text-[8px] font-mono tracking-widest text-primary uppercase">
+              {isLabMode ? "STRUCTURAL ANALYSIS: ACTIVE" : "KINETIC ANALYSIS: READY"}
+            </div>
           </div>
         </div>
+        
         <div className="flex justify-between items-end">
           <div className="w-24 h-24 border-l border-b border-white/10" />
+          <div className="flex flex-col gap-4 pointer-events-auto items-end mb-4 mr-4">
+             <Button 
+                onClick={() => setIsLabMode(!isLabMode)}
+                variant="outline" 
+                size="sm" 
+                className={`rounded-full border-primary/30 text-[10px] tracking-widest uppercase h-10 px-6 backdrop-blur-xl ${isLabMode ? 'bg-primary text-white' : 'bg-black/20'}`}
+             >
+                {isLabMode ? <Scan className="w-3 h-3 mr-2" /> : <FlaskConical className="w-3 h-3 mr-2" />}
+                {isLabMode ? "CLOSE SCAN" : "INITIALIZE LAB MODE"}
+             </Button>
+          </div>
           <div className="w-24 h-24 border-r border-b border-white/10" />
         </div>
       </div>
@@ -144,7 +172,7 @@ export const AuraThreeScene = () => {
           <Environment preset="city" />
           
           <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-            <ShoeModel />
+            <ShoeModel isLabMode={isLabMode} />
           </Float>
 
           <Lights />
@@ -158,7 +186,6 @@ export const AuraThreeScene = () => {
             color="#000000"
           />
 
-          {/* Floor Reflection Mock-up */}
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.25, 0]}>
             <planeGeometry args={[20, 20]} />
             <meshStandardMaterial 
@@ -176,7 +203,6 @@ export const AuraThreeScene = () => {
           enableZoom={false}
           minPolarAngle={Math.PI / 3}
           maxPolarAngle={Math.PI / 1.8}
-          autoRotate={false}
         />
       </Canvas>
     </div>
