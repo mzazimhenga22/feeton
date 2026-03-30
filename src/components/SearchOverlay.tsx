@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Search as SearchIcon, X, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { getProducts, Product } from "@/lib/products";
 import Image from "next/image";
@@ -53,6 +53,10 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl bg-background/80 backdrop-blur-2xl border-white/10 p-0 overflow-hidden top-[20%] translate-y-0">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Search the Feeton Archive</DialogTitle>
+        </DialogHeader>
+        
         <div className="p-8 space-y-8">
           <div className="relative">
             <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-primary" />

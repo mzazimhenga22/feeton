@@ -18,13 +18,17 @@ export const STATIC_PRODUCTS: Product[] = [
 ];
 
 export async function getProducts(): Promise<Product[]> {
+  if (!supabase) {
+    return STATIC_PRODUCTS
+  }
+
   try {
     const { data, error } = await supabase
       .from('products')
       .select('*')
     
     if (error) {
-      console.error('Error fetching products from Supabase:', error)
+      // Fail silently to avoid console noise when table doesn't exist yet
       return STATIC_PRODUCTS
     }
 
@@ -37,7 +41,6 @@ export async function getProducts(): Promise<Product[]> {
       image: getPublicUrl('products', product.image)
     })) as Product[]
   } catch (err) {
-    console.error('Unexpected error fetching products:', err)
     return STATIC_PRODUCTS
   }
 }
