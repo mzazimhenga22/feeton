@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import { AuraThreeScene } from "@/components/AuraThreeScene";
 import { TechSection } from "@/components/TechSection";
@@ -16,12 +16,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
-const TikTokIcon = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>
-  </svg>
-);
-
 const AnimatedTitle = ({ text }: { text: string }) => {
   return (
     <h1 className="text-8xl md:text-[12rem] font-headline font-extrabold leading-[0.85] tracking-tighter uppercase overflow-hidden">
@@ -31,7 +25,7 @@ const AnimatedTitle = ({ text }: { text: string }) => {
           initial={{ y: "100%" }}
           animate={{ y: 0 }}
           transition={{
-            delay: 0.1 * i,
+            delay: 0.05 * i,
             duration: 0.8,
             ease: [0.22, 1, 0.36, 1]
           }}
@@ -44,6 +38,18 @@ const AnimatedTitle = ({ text }: { text: string }) => {
   );
 };
 
+const ScrollSection = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+);
+
 export default function Home() {
   const targetRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -51,14 +57,14 @@ export default function Home() {
     offset: ["start start", "end end"]
   });
 
-  const scale = useSpring(useTransform(scrollYProgress, [0, 0.2], [1, 1.4]), {
+  const scale = useSpring(useTransform(scrollYProgress, [0, 0.2], [1, 1.2]), {
     stiffness: 100,
-    damping: 30
+    damping: 30,
+    restDelta: 0.001
   });
 
   const textOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.2], [0, -200]);
-  const heroRotate = useTransform(scrollYProgress, [0, 0.5], [0, 10]);
+  const textY = useTransform(scrollYProgress, [0, 0.2], [0, -100]);
 
   return (
     <div ref={targetRef} className="min-h-screen relative bg-[#050505] text-white selection:bg-primary selection:text-white overflow-x-hidden">
@@ -92,10 +98,10 @@ export default function Home() {
                 <div className="relative">
                    <AnimatedTitle text="QUALITY" />
                    <motion.h1 
-                    initial={{ opacity: 0, scale: 0.8 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.5, duration: 1 }}
-                    className="text-8xl md:text-[12rem] font-headline font-extrabold leading-[0.85] tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-[shimmer_5s_linear_infinite]"
+                    transition={{ delay: 0.4, duration: 1 }}
+                    className="text-8xl md:text-[12rem] font-headline font-extrabold leading-[0.85] tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer"
                    >
                     STEPS
                    </motion.h1>
@@ -105,7 +111,7 @@ export default function Home() {
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 1 }}
+                transition={{ delay: 0.6, duration: 1 }}
                 className="text-xl text-foreground/50 max-w-lg font-body leading-relaxed uppercase tracking-wider"
               >
                 Engineering the bridge between biology and kinetic art.
@@ -114,7 +120,7 @@ export default function Home() {
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
+                transition={{ delay: 0.8 }}
                 className="flex flex-col sm:flex-row gap-6"
               >
                 <Button size="lg" className="h-20 px-12 text-lg font-bold bg-primary text-primary-foreground rounded-full glow-red group transition-all duration-300 transform hover:scale-105 active:scale-95">
@@ -124,18 +130,14 @@ export default function Home() {
             </motion.div>
 
             <motion.div 
-              style={{ scale, rotate: heroRotate }}
-              className="relative h-[600px] lg:h-[800px] flex items-center justify-center perspective-1000"
+              style={{ scale }}
+              className="relative h-[600px] lg:h-[800px] flex items-center justify-center"
             >
-               <div className="w-full h-full relative cursor-grab active:cursor-grabbing">
+               <div className="w-full h-full relative">
                  <AuraThreeScene />
                </div>
                <div className="absolute inset-0 flex items-center justify-center -z-10 pointer-events-none">
-                  <motion.div 
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-                    transition={{ repeat: Infinity, duration: 8 }}
-                    className="w-[700px] h-[700px] bg-primary/20 rounded-full blur-[140px]" 
-                  />
+                  <div className="w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] animate-pulse-glow" />
                </div>
             </motion.div>
           </div>
@@ -147,7 +149,7 @@ export default function Home() {
         >
           <span className="text-[10px] uppercase tracking-[0.5em] font-bold opacity-30">Scroll to Evolve</span>
           <motion.div 
-            animate={{ y: [0, 15, 0] }}
+            animate={{ y: [0, 10, 0] }}
             transition={{ repeat: Infinity, duration: 2 }}
             className="flex flex-col items-center"
           >
@@ -159,67 +161,50 @@ export default function Home() {
 
       <SocialProof />
       
-      <motion.div
-        initial={{ opacity: 0, y: 100 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
+      <ScrollSection>
         <LiveDrops />
-      </motion.div>
+      </ScrollSection>
 
-      <CollectionSection />
+      <ScrollSection>
+        <CollectionSection />
+      </ScrollSection>
 
-      <TechSection />
+      <ScrollSection>
+        <TechSection />
+      </ScrollSection>
 
-      <MembershipTiers />
+      <ScrollSection>
+        <MembershipTiers />
+      </ScrollSection>
 
-      <Testimonials />
+      <ScrollSection>
+        <Testimonials />
+      </ScrollSection>
       
-      <Newsletter />
+      <ScrollSection>
+        <Newsletter />
+      </ScrollSection>
 
       {/* Footer */}
       <footer className="py-40 bg-black relative overflow-hidden">
         <div className="container mx-auto px-6 text-center space-y-20 relative z-10">
           <div className="flex flex-col items-center gap-8">
-            <motion.a 
-              whileHover={{ scale: 1.05 }}
-              href="/" 
-              className="text-6xl md:text-8xl font-bold font-headline tracking-tighter inline-flex items-center gap-4 group"
-            >
+            <Link href="/" className="text-6xl md:text-8xl font-bold font-headline tracking-tighter inline-flex items-center gap-4 group">
               <span className="text-primary group-hover:text-glow-red transition-all duration-500">FEETON</span>
               <span className="text-foreground/80">KICKS</span>
-            </motion.a>
+            </Link>
             <p className="text-foreground/20 uppercase tracking-[1em] text-[12px] font-bold">Engineered for the Future</p>
-          </div>
-
-          <div className="flex justify-center gap-10">
-            {[
-              { icon: TikTokIcon, href: "https://www.tiktok.com/@feeton_collections" },
-              { icon: ArrowRight, href: "#" },
-              { icon: ArrowRight, href: "#" }
-            ].map((social, i) => (
-              <motion.a 
-                key={i}
-                whileHover={{ y: -8, scale: 1.1, borderColor: "rgba(255,0,0,0.5)" }}
-                href={social.href} 
-                className="w-16 h-16 rounded-full border border-white/5 flex items-center justify-center hover:text-primary transition-all bg-white/5 backdrop-blur-md"
-              >
-                <social.icon />
-              </motion.a>
-            ))}
           </div>
 
           <div className="flex flex-wrap justify-center gap-16 md:gap-32">
             {["Privacy", "Terms", "Contact"].map((link, i) => (
-              <motion.a 
+              <a 
                 key={i}
-                whileHover={{ letterSpacing: "0.6em", color: "hsl(var(--primary))" }}
                 href="#" 
-                className="text-sm font-bold transition-all uppercase tracking-[0.4em]"
+                className="text-sm font-bold transition-all uppercase tracking-[0.4em] hover:text-primary"
               >
                 {link}
-              </motion.a>
+              </a>
             ))}
           </div>
 
@@ -229,10 +214,9 @@ export default function Home() {
             </p>
           </div>
         </div>
-        
-        {/* Footer Glow */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
       </footer>
     </div>
   );
 }
+
+import Link from "next/link";
