@@ -17,7 +17,11 @@ export const STATIC_PRODUCTS: Product[] = [
   { id: "c-3", name: "CRIMSON EDGE 01", price: "$480.00", category: "LIFESTYLE", tag: "Lifestyle", description: "Sharp edges meet soft landings.", image: PlaceHolderImages.find(img => img.id === "shoe-3")?.imageUrl || "" },
 ];
 
+/**
+ * Fetches products from Supabase with a silent fallback to static data.
+ */
 export async function getProducts(): Promise<Product[]> {
+  // If Supabase is not initialized (missing env vars), return static data immediately.
   if (!supabase) {
     return STATIC_PRODUCTS
   }
@@ -27,8 +31,8 @@ export async function getProducts(): Promise<Product[]> {
       .from('products')
       .select('*')
     
+    // Fail silently to avoid console noise when table doesn't exist yet or permissions are restricted.
     if (error) {
-      // Fail silently to avoid console noise when table doesn't exist yet
       return STATIC_PRODUCTS
     }
 
@@ -41,6 +45,7 @@ export async function getProducts(): Promise<Product[]> {
       image: getPublicUrl('products', product.image)
     })) as Product[]
   } catch (err) {
+    // Catch-all for network errors or unexpected exceptions.
     return STATIC_PRODUCTS
   }
 }
