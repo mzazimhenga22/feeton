@@ -18,25 +18,24 @@ export const STATIC_PRODUCTS: Product[] = [
 ];
 
 /**
- * Fetches products from Supabase with a silent fallback to static data.
+ * Fetches products from Supabase with a completely silent fallback to static data.
+ * This avoids console noise and network-related errors if the table doesn't exist.
  */
 export async function getProducts(): Promise<Product[]> {
-  // If Supabase is not initialized (missing env vars), return static data immediately.
+  // If Supabase is not initialized, return static data immediately.
   if (!supabase) {
     return STATIC_PRODUCTS
   }
 
   try {
+    // We wrap this in a very defensive check to avoid 404 noise where possible
     const { data, error } = await supabase
       .from('products')
       .select('*')
     
-    // Fail silently to avoid console noise when table doesn't exist yet or permissions are restricted.
-    if (error) {
-      return STATIC_PRODUCTS
-    }
-
-    if (!data || data.length === 0) {
+    // If there's an error (like a 404 because the table doesn't exist), 
+    // we return static products silently without logging.
+    if (error || !data || data.length === 0) {
       return STATIC_PRODUCTS
     }
 
@@ -44,7 +43,7 @@ export async function getProducts(): Promise<Product[]> {
       ...product,
       image: getPublicUrl('products', product.image)
     })) as Product[]
-  } catch (err) {
+  } catch {
     // Catch-all for network errors or unexpected exceptions.
     return STATIC_PRODUCTS
   }
