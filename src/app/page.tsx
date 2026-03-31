@@ -89,7 +89,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 items-center gap-0 lg:-space-x-20">
             <motion.div 
               style={{ opacity: textOpacity, y: textY }}
-              className="space-y-12 relative z-20"
+              className="space-y-12 relative z-20 will-change-transform"
             >
               <div className="space-y-6">
                 <motion.div
@@ -138,7 +138,7 @@ export default function Home() {
 
             <motion.div 
               style={{ scale }}
-              className="relative h-[600px] lg:h-[800px] flex items-center justify-center z-10"
+              className="relative h-[600px] lg:h-[800px] flex items-center justify-center z-10 will-change-transform"
             >
                <div className="w-full h-full relative">
                  <AuraThreeScene />
