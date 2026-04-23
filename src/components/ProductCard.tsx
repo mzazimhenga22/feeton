@@ -2,35 +2,89 @@
 
 import React from "react";
 import Image from "next/image";
-import { Eye, Plus } from "lucide-react";
+import Link from "next/link";
+import { Eye, Plus, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { MicroCopyReveal } from "./MicroCopyReveal";
 import { useCart } from "./CartProvider";
+import { useWishlist } from "./WishlistProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "./ThemeProvider";
 
 interface ProductCardProps {
   id: string;
+  slug?: string;
   name: string;
   price: string;
   image: string;
   tag: string;
   description: string;
   category?: string;
+  gallery?: string[];
+  colorway?: string;
+  releaseStatus?: string;
+  dropDate?: string;
+  supportingNote?: string;
+  story?: string;
+  highlights?: string[];
+  specs?: any[];
+  sizes?: string[];
 }
 
-export const ProductCard = ({ id, name, price, image, tag, description, category = "UNSPECIFIED" }: ProductCardProps) => {
+export const ProductCard = ({
+  id,
+  slug,
+  name,
+  price,
+  image,
+  tag,
+  description,
+  category = "UNSPECIFIED",
+  ...rest
+}: ProductCardProps) => {
   const { addItem } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const { toast } = useToast();
   const { setTheme } = useTheme();
 
+  const isSaved = isInWishlist(id);
+
+  const product = {
+    id,
+    slug: slug || "",
+    name,
+    price,
+    image,
+    tag,
+    description,
+    category,
+    gallery: rest.gallery || [image],
+    colorway: rest.colorway || "",
+    releaseStatus: rest.releaseStatus || "",
+    dropDate: rest.dropDate || "",
+    supportingNote: rest.supportingNote || "",
+    story: rest.story || "",
+    highlights: rest.highlights || [],
+    specs: rest.specs || [],
+    sizes: rest.sizes || ["40", "41", "42", "43", "44", "45"]
+  };
+
   const handleAddToCart = () => {
-    addItem({ id, name, price, image, tag, description, category });
+    addItem(product);
     toast({
       title: "Added to Collection",
       description: `${name} has been added to your cart.`,
+    });
+  };
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleWishlist(product);
+    toast({
+      title: isSaved ? "Removed from Wishlist" : "Added to Wishlist",
+      description: isSaved ? `${name} removed.` : `${name} saved to your collection.`,
     });
   };
 
@@ -76,8 +130,31 @@ export const ProductCard = ({ id, name, price, image, tag, description, category
             </div>
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="flex space-x-2">
-                <Button size="icon" className="rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-primary hover:text-primary-foreground">
-                  <Eye className="w-5 h-5" />
+                {slug ? (
+                  <Button
+                    asChild
+                    size="icon"
+                    className="rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <Link
+                      href={`/products/${slug}`}
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label={`Open ${name} dossier`}
+                    >
+                      <Eye className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button size="icon" className="rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-primary hover:text-primary-foreground">
+                    <Eye className="w-5 h-5" />
+                  </Button>
+                )}
+                <Button 
+                  size="icon" 
+                  className={`rounded-full backdrop-blur-md border border-white/20 hover:bg-primary hover:text-primary-foreground transition-all ${isSaved ? "bg-primary text-primary-foreground" : "bg-white/10"}`}
+                  onClick={handleToggleWishlist}
+                >
+                  <Heart className={`w-5 h-5 ${isSaved ? "fill-current" : ""}`} />
                 </Button>
                 <Button 
                   size="icon" 
@@ -137,12 +214,20 @@ export const ProductCard = ({ id, name, price, image, tag, description, category
               >
                 ADD TO COLLECTION
               </Button>
-              <Button 
-                variant="outline" 
-                className="h-14 w-14 rounded-xl border-white/20 hover:bg-primary hover:text-primary-foreground transition-all duration-500"
-                onClick={handleAddToCart}
+              <Button
+                variant="outline"
+                size="icon"
+                className={`h-14 w-14 rounded-xl border-white/20 transition-all duration-500 ${isSaved ? "bg-primary text-primary-foreground" : "hover:bg-primary/20"}`}
+                onClick={handleToggleWishlist}
               >
-                <Plus />
+                <Heart className={`w-6 h-6 ${isSaved ? "fill-current" : ""}`} />
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="h-14 rounded-xl border-white/20 px-5 hover:bg-primary hover:text-primary-foreground transition-all duration-500"
+              >
+                <Link href={slug ? `/products/${slug}` : "#"}>FULL DOSSIER</Link>
               </Button>
             </div>
           </div>

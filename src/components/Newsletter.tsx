@@ -27,12 +27,9 @@ export const Newsletter = () => {
           className="max-w-5xl mx-auto p-16 md:p-32 rounded-[5rem] bg-white/5 border border-white/5 backdrop-blur-2xl flex flex-col items-center text-center space-y-12"
         >
           <div className="space-y-6">
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-            >
+            <div className="animate-float">
               <Mail className="w-16 h-16 text-primary mx-auto mb-8" />
-            </motion.div>
+            </div>
             <h2 className="text-sm font-bold tracking-[0.6em] text-primary uppercase mb-4">Chapter 04: The Future</h2>
             <h3 className="text-5xl md:text-7xl font-headline font-bold uppercase tracking-tighter leading-none">Secure <br /><span className="text-primary text-glow-red">Early Access</span></h3>
             <p className="text-foreground/40 max-w-lg mx-auto font-body text-sm uppercase tracking-[0.25em] leading-relaxed">

@@ -2,6 +2,9 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { CartProvider } from '@/components/CartProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { AuthProvider } from '@/components/AuthProvider';
+import { WishlistProvider } from '@/components/WishlistProvider';
+import { OrderProvider } from '@/components/OrderProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { CustomCursor } from '@/components/CustomCursor';
 import { TechGridBackground } from '@/components/TechGridBackground';
@@ -30,14 +33,20 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-background text-foreground overflow-x-hidden cursor-none">
         <ThemeProvider>
-          <CartProvider>
-            <CustomCursor />
-            <TechGridBackground />
-            <div className="relative z-10">
-              {children}
-            </div>
-            <Toaster />
-          </CartProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <OrderProvider>
+                  <CustomCursor />
+                  <TechGridBackground />
+                  <div className="relative z-10">
+                    {children}
+                  </div>
+                  <Toaster />
+                </OrderProvider>
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

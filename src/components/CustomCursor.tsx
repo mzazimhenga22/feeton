@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion, useSpring, useMotionValue } from "framer-motion";
+import React, { useEffect, useRef, useCallback } from "react";
+import { motion, useSpring, useMotionValue, useTransform } from "framer-motion";
 
-export const CustomCursor = () => {
-  const [isHovering, setIsHovering] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+const CustomCursorInner = () => {
+  const isVisibleRef = useRef(false);
 
   // Using raw motion values for zero-latency position updates
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+
+  // MotionValue for hover state — avoids React re-renders entirely
+  const hoverValue = useMotionValue(0);
 
   // High-performance spring configuration: 
   // Increased stiffness and lower mass to minimize perceived "lag" 
@@ -18,15 +20,27 @@ export const CustomCursor = () => {
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
+  // Derive animated values from hoverValue — no React state involved
+  const cursorScale = useTransform(hoverValue, [0, 1], [1, 2.5]);
+  const cursorBg = useTransform(hoverValue, [0, 1], ["rgba(255, 255, 255, 1)", "rgba(255, 255, 255, 0.2)"]);
+  const dotScale = useTransform(hoverValue, [0, 1], [1, 0]);
+  const springScale = useSpring(cursorScale, { damping: 30, stiffness: 500 });
+  const springDotScale = useSpring(dotScale, { damping: 30, stiffness: 500 });
+
+  const opacity = useMotionValue(0);
+
   useEffect(() => {
     // Direct position updates to motion values bypass React's render cycle
     const moveCursor = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        opacity.set(1);
+      }
     };
 
-    // Throttled-like hover detection logic
+    // Hover detection — writes to MotionValue, no setState
     const handleHover = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target) return;
@@ -38,7 +52,7 @@ export const CustomCursor = () => {
         target.tagName === 'CANVAS' ||
         target.tagName === 'INPUT';
         
-      setIsHovering(!!isInteractive);
+      hoverValue.set(isInteractive ? 1 : 0);
     };
 
     window.addEventListener("mousemove", moveCursor, { passive: true });
@@ -48,7 +62,7 @@ export const CustomCursor = () => {
       window.removeEventListener("mousemove", moveCursor);
       window.removeEventListener("mouseover", handleHover);
     };
-  }, [mouseX, mouseY, isVisible]);
+  }, [mouseX, mouseY, hoverValue, opacity]);
 
   // Early exit for touch devices to save resources
   if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) {
@@ -63,24 +77,23 @@ export const CustomCursor = () => {
         y: cursorY,
         translateX: "-50%",
         translateY: "-50%",
-        opacity: isVisible ? 1 : 0,
+        opacity,
       }}
     >
       <motion.div
-        initial={false}
-        animate={{
-          scale: isHovering ? 2.5 : 1,
-          backgroundColor: isHovering ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 1)",
-          borderWidth: "1px"
+        style={{
+          scale: springScale,
+          backgroundColor: cursorBg,
         }}
-        transition={{ type: "spring", damping: 30, stiffness: 500 }}
         className="w-full h-full rounded-full border border-white flex items-center justify-center"
       >
         <motion.div 
-          animate={{ scale: isHovering ? 0 : 1 }}
+          style={{ scale: springDotScale }}
           className="w-1.5 h-1.5 bg-white rounded-full" 
         />
       </motion.div>
     </motion.div>
   );
 };
+
+export const CustomCursor = React.memo(CustomCursorInner);

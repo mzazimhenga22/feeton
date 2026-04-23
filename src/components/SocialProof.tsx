@@ -9,10 +9,8 @@ export const SocialProof = () => {
   return (
     <div className="py-20 bg-black border-y border-white/5 overflow-hidden">
       <div className="flex whitespace-nowrap">
-        <motion.div 
-          animate={{ x: [0, -1000] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="flex gap-20 items-center"
+        <div 
+          className="flex gap-20 items-center animate-marquee"
         >
           {[...BRANDS, ...BRANDS].map((brand, i) => (
             <div key={i} className="flex items-center gap-10">
@@ -22,7 +20,7 @@ export const SocialProof = () => {
               <div className="w-2 h-2 rounded-full bg-primary/20" />
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   );

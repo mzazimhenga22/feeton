@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { Search as SearchIcon, X, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/components/ui/dialog";
@@ -90,8 +91,9 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
                 <h4 className="text-[10px] uppercase tracking-[0.4em] font-bold text-muted-foreground ml-2">Matching Masterpieces</h4>
                 <div className="grid gap-2">
                   {results.map((product) => (
-                    <button
+                    <Link
                       key={product.id}
+                      href={product.slug ? `/products/${product.slug}` : "#"}
                       onClick={onClose}
                       className="flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all group text-left w-full"
                     >
@@ -107,7 +109,7 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
                         <p className="text-xs text-muted-foreground uppercase tracking-widest">{product.category} • {product.price}</p>
                       </div>
                       <ArrowRight className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </motion.div>

@@ -71,8 +71,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.4; filter: blur(20px); }
-  50% { opacity: 0.7; filter: blur(35px); }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
 }
 
 .animate-pulse-glow {
@@ -86,4 +86,24 @@
 
 .animate-shimmer {
   animation: shimmer 3s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+  will-change: transform;
+}
+
+@keyframes sweep-line {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+.animate-sweep-line {
+  animation: sweep-line 10s linear infinite;
+  will-change: transform;
 }

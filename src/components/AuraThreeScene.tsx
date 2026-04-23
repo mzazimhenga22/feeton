@@ -75,8 +75,18 @@ function ShoeModel({ isLabMode }: { isLabMode: boolean }) {
     const targetRotationY = state.mouse.x * 0.4;
     const targetRotationX = state.mouse.y * 0.2;
     
-    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, targetRotationY + (Math.PI / 4), 0.05);
-    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, targetRotationX, 0.05);
+    const currentY = group.current.rotation.y;
+    const currentX = group.current.rotation.x;
+    const nextY = THREE.MathUtils.lerp(currentY, targetRotationY + (Math.PI / 4), 0.05);
+    const nextX = THREE.MathUtils.lerp(currentX, targetRotationX, 0.05);
+    
+    group.current.rotation.y = nextY;
+    group.current.rotation.x = nextX;
+    
+    // Only keep rendering if rotation is still converging
+    if (Math.abs(nextY - currentY) > 0.0001 || Math.abs(nextX - currentX) > 0.0001) {
+      state.invalidate();
+    }
   });
 
   return (
@@ -86,7 +96,7 @@ function ShoeModel({ isLabMode }: { isLabMode: boolean }) {
   );
 }
 
-export const AuraThreeScene = () => {
+const AuraThreeSceneInner = () => {
   const [isLabMode, setIsLabMode] = useState(false);
 
   return (
@@ -116,7 +126,9 @@ export const AuraThreeScene = () => {
 
       <Canvas 
         shadows 
-        dpr={[1, 2]} 
+        dpr={[1, 1.5]} 
+        frameloop="demand"
+        performance={{ min: 0.5 }}
         camera={{ position: [0, 0, 5], fov: 30 }}
         gl={{ antialias: true, alpha: true, stencil: false, depth: true, powerPreference: "high-performance" }}
       >
@@ -135,6 +147,8 @@ export const AuraThreeScene = () => {
     </div>
   );
 };
+
+export const AuraThreeScene = React.memo(AuraThreeSceneInner);
 
 if (typeof window !== 'undefined') {
   useGLTF.preload("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb");

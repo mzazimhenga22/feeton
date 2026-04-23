@@ -43,3 +43,15 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+# Scratch scripts
+check_cols.ts
+check_count.ts
+check_products.ts
+list_policies.ts
+promote_admin.ts
+seed.ts
+seed_real.ts
+test_conn.ts
+.agent_plan.md
+.agent_state.json
+task.md

@@ -53,11 +53,9 @@ export const LiveDrops = () => {
         </Button>
       </div>
       
-      {/* Dynamic Background Line */}
-      <motion.div 
-        animate={{ x: [-1000, 1000] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        className="absolute top-0 h-px w-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-30"
+      {/* Dynamic Background Line — CSS animated for zero JS overhead */}
+      <div 
+        className="absolute top-0 h-px w-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-30 animate-sweep-line"
       />
     </section>
   );

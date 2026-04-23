@@ -61,7 +61,7 @@ export const CollectionSection = () => {
           </Tabs>
         </div>
 
-        <motion.div layout className="grid md:grid-cols-3 gap-16">
+        <div className="grid md:grid-cols-3 gap-16">
           {loading ? (
             Array(3).fill(0).map((_, i) => (
               <div key={i} className="space-y-6">
@@ -73,11 +73,10 @@ export const CollectionSection = () => {
               </div>
             ))
           ) : (
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence mode="wait">
               {filteredProducts.map((product, idx) => (
                 <motion.div
                   key={product.id}
-                  layout
                   initial={{ opacity: 0, scale: 0.9, y: 30 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}
@@ -88,7 +87,7 @@ export const CollectionSection = () => {
               ))}
             </AnimatePresence>
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
